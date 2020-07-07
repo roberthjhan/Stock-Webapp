@@ -1,0 +1,19 @@
+{% extends "layout.html" %} <!-- inherit from layout.html -->
+{% block content %}
+<body>
+    <legend class = "border-bottom mb-4"> {{title}} </legend>
+    <div class = "stock-plot">
+        {% for part in plot %}
+            {{ part | safe }}
+        {% endfor %}
+    </div>
+    <div class = "form-group">
+        <label> Ticker: </label>
+        {{ form.ticker(class = "form-control", placeholder = "AAPL") }}
+    </div>
+    <div class = "form-group">
+        {{ form.submit(class = "btn btn-outline-info") }}
+    </div>
+    <a href = "/stonks">Search again</a>
+</body>
+{% endblock content %}

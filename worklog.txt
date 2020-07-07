@@ -1,0 +1,23 @@
+Title: Stonks
+Status: In Progress Working 
+Owner: Robert Han
+
+
+May 2020
+- Concept for project: Stock visualization application. Should be able to show essential features of a trading tool such as historical prices, highs/lows, volume, etc.
+- Searched for API's or libraries to pull stock information from.
+- Decided on IEX API. There are some limitations to the API regarding what information can be requested with a free account. We will see how it turns out.
+- Spent a week familiarizing myself with the API and what information can be gleaned.
+
+June 2020
+- Began programming the GET portion of the project and looking into how visualization would be done. Originally intended to use an R script to create visualizations but stumbled on the python Bokeh library which offers similar tools with aesthetic visuals in python. 
+- Experimented with Bokeh and have grown to like it a lot. 
+- Combined GET with visualization, accidentally used up all my API calls for the month by forgetting to comment out a call that wasn't being used... Gonna work on some other stuff in the meantime. 
+
+July 2020
+- Looking into an interface to use for the application. Experimented with tkinter but it's not very aesthetic. Looking into Flask now.
+- Got into Flask and html coding using online tutorials to help me along. Still not the most aesthetic but I've been able to incorporate a lot of neat things. I decided to use the subreddit r/wallstreetbets as a theme for the web app and it definitely shows.
+- Got individual pieces of the web app running (web app itself and charting functions)
+- Struggled with embedding my Bokeh plot into html but got it in the end.
+- Working version of the web app is built. Room for improvement is discussed in webapp.py.
+- Will take a break for now and focus on finding a job.
