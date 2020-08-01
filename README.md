@@ -5,5 +5,5 @@ Uses Flask for the web app and Bokeh for plotting stock information.
 
 Work in progress, functional.
 
-
-- Problem with Bokeh plot not showing axes was fixed, cannot upload a new gif until API calls refresh in Aug.
+- Problem with Bokeh plot not showing axes was fixed, new gif uploaded.
+- Working on deploying app with Heroku.
