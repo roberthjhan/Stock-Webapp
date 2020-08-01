@@ -3,26 +3,22 @@
 <html>
 <head>
     <!-- Bokeh includes-->
-
     <link rel="stylesheet" href="http://cdn.pydata.org/bokeh/release/bokeh-2.1.1.min.css" type="text/css" />
     <script type="text/javascript" src="http://cdn.pydata.org/bokeh/release/bokeh-2.1.1.min.js"></script>
     <script src="https://cdn.bokeh.org/bokeh/release/bokeh-2.1.1.min.js" crossorigin="anonymous"></script>
     <script src="https://cdn.bokeh.org/bokeh/release/bokeh-widgets-2.1.1.min.js" crossorigin="anonymous"></script>
     <script src="https://cdn.bokeh.org/bokeh/release/bokeh-tables-2.1.1.min.js" crossorigin="anonymous"></script>
-
     <!-- bootstrap starter -->
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name = "viewport" content = "width=device - width, initial-scale = 1, shrink-to-fit = no">
-
     <!-- Bootstrap CSS -->
     <link rel = "stylesheet" href = "https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
           integrity = "sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin = "anonymous">
-
-    <link rel = "stylesheet" type = "text/css" href = "{{ url_for('static', filename  = 'main.css') }}"> <!-- find the main.css file -->
+     <!-- find the main.css file -->
+    <link rel = "stylesheet" type = "text/css" href = "{{ url_for('static', filename  = 'main.css') }}">
 
     <title> Stock lookup </title>
-
 </head>
 
 <body> <!-- make look pretty? -->
@@ -57,19 +53,17 @@
                         {% endfor %}
                     {% endif %}
                 {% endwith %}
-
                 {% block content %}{% endblock %}
             </div>
             <div >
                 <div class = "sidebar text-white">
-                    <h3 class = "text-dark"> The sidebar </h3>
+                    <h3 class = "text-dark"> Sidebar </h3>
                     <p class = "text-muted" > Money printer go brrrrr
                         <ul class = "list-group">
                             <li class = "list-group-item list-group-item-light ">
-                                <a href = "https://www.reddit.com/r/wallstreetbets/">WSB</a> </li>
+                                <a href = "https://www.reddit.com/r/wallstreetbets/">r/WSB</a> </li>
                             <li class = "list-group-item list-group-item-light">
                                 <a href = "https://brrr.money/">Money printer</a> </li>
-                            <li class = "list-group-item list-group-item-light"> acknowldgements </li>
                         </ul>
                     </p>
                 </div>

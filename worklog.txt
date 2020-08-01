@@ -20,4 +20,5 @@ July 2020
 - Got individual pieces of the web app running (web app itself and charting functions)
 - Struggled with embedding my Bokeh plot into html but got it in the end.
 - Working version of the web app is built. Room for improvement is discussed in webapp.py.
-- Will take a break for now and focus on finding a job.
+- Was working on a fix for the axes not being shown in the bokeh plot when I ran out of API calls. 
+- Fixed axes, implemented flash messages for API errors.

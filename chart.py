@@ -4,20 +4,24 @@ visualizing stock data
 Author: Robert Han
 '''
 
-import requests
 import numpy as np
 import bokeh.plotting as bok
-from bokeh.models import Band, ColumnDataSource, HoverTool
+import requests
+from bokeh.models import Band, ColumnDataSource, HoverTool, NumeralTickFormatter
 from bokeh.embed import components
 import pandas as pd
 
-ERRORS = {"1": "INVALID TICKER",
-          "2": "EXCEEDED API CALLS"}
+ERRORS = {"400": "Invalid ticker.",
+          "401": "Access restricted by key.",
+          "402": "Data limited by free tier.",
+          "403": "Incorrect or missing key.",
+          "404": "Not found.",
+          "413": "Max types.",
+          "429": "Too many requests.",
+          "451": "Enterprise permission required.",
+          "500": "IEX Cloud system error."}
 
-# TOKEN = "pk_f2020afa73254d8891bd5c4f6cefca2b"
-
-
-def get_stock(ticker = "aapl", range = ""): # REVISE TO PASS ERROR MESSAGE
+def get_stock(ticker = "aapl", range = ""):
     '''
     Incomplete: Process errors
     Take a ticker and range and make an API call to the IEX cloud
@@ -26,26 +30,29 @@ def get_stock(ticker = "aapl", range = ""): # REVISE TO PASS ERROR MESSAGE
     f = open("token.txt", "r")
     token = f.read()
 
-    if ticker.isalpha():
-        ticker = ticker.lower()
-        api_url2 = "https://cloud-sse.iexapis.com/stable/stock/" + ticker + \
-                       "/chart" + range + "?token=" + token
-        print(api_url2)
-        return requests.get(api_url2).json()
-    else:
-        return "1"
+    ticker = ticker.lower()
+    api_url = "https://cloud-sse.iexapis.com/stable/stock/" + ticker + \
+                   "/chart" + range + "?token=" + token
+    # print(api_url)
+    try:
+        # Try to return a json formatted response
+        return(requests.get(api_url).json())
+    except:
+        # An error occured take error code and generate an error response
+        response = [n for n in str(requests.get(api_url)) if n.isdigit()]
+        return report_error("".join(response))
 
-def validate_data(data):
-    ''' Incomplete '''
-    if data in ERRORS.keys():
-        msg = "Error " + data + ", " + ERRORS[data]
-        return msg
+def report_error(error):
+    ''' Take error code and report the error that occured '''
+    msg = "Unable to access data. Error: " + error + ". " + ERRORS[error]
+    return msg
 
 def chart_it(data):
     '''
     Takes a json of daily stock information and plots it
     Returns the script and div components of the plot which can
     be embedded into an html file'''
+    # Collect data
     dates = np.array([day["date"] for day in data])
     dates = pd.to_datetime((dates), format = "%Y/%m/%d")
     prices = np.array(([day["low"] for day in data], [day["high"] for day in data]))
@@ -53,9 +60,6 @@ def chart_it(data):
     close = np.array([day["close"] for day in data])
     open = np.array([day["open"] for day in data])
     volume = np.array([day["volume"] for day in data])
-
-    # output to static HTML file
-    bok.output_file("lines.html")
     # Create a source cannot pass literals and expect hovertool to work as intended
     source = ColumnDataSource(data = dict(dates = dates,
                                         avg_prices = avg_prices,
@@ -63,9 +67,9 @@ def chart_it(data):
                                         open = open,
                                         volume = volume))
     # create a new plot with a title and axis labels
-    p = bok.figure(x_axis_type = 'datetime',
-                   x_axis_label = 'date',
-                   y_axis_label = '$')
+    p = bok.figure(x_axis_type = 'datetime')
+    p.yaxis[0].formatter = NumeralTickFormatter(format="$0.00")
+
     # Add a line
     p.line(x = "dates", y = "avg_prices", line_width = 3, source = source)
     # Fill under line
@@ -89,30 +93,57 @@ def chart_it(data):
             "price" : "printf",
             "volume": "printf",
             "open"  : "printf",
-            "close" : "printf"
-        },
+            "close" : "printf"},
         mode = "vline"))
-
-    # Get html embeddable components
+    # Aesthetic changes
+    p.toolbar.autohide = True
+    p.min_border_left = 50
+    p.min_border_bottom = 50
+    p.background_fill_alpha = 0
+    p.border_fill_alpha = 0
+    # Generate html embeddable components
     script, div = components(p)
     return script, div
 
-# ticker = 'aapl'
-# data = get_stock(ticker, "/ytd")
-# print( chart_it(data, ticker))
+def test_chart():
+    x = [1,2,3,4,5,6,7,8,9]
+    y = [1,2,3,4,5,6,7,8,9]
 
+    source = ColumnDataSource(data=dict(x=x,
+                                        y=y))
+    # create a new plot with a title and axis labels
+    p = bok.figure(x_axis_label='x',
+                   y_axis_label='y')
+    # Add a line
+    p.line(x="x", y="y", line_width=3, source=source)
+    # Fill under line
+    band = Band(base='x',
+                upper='y',
+                source=source,
+                level='underlay',
+                fill_alpha=0.2,
+                fill_color='#55FF88')
+    p.add_layout(band)
+    # Create hovertool showing date, avg_price, volume, open, and close
+    p.add_tools(HoverTool(
+        tooltips=[
+            ('x', '$@x{0.2f}'),
+            ('y', '@y{0,0}')],
+        formatters={
+            "x": "printf",
+            "y": "printf",
+        },
+        mode="vline"))
 
+    p.toolbar.autohide = True
+    p.min_border_left = 50
+    p.min_border_bottom = 50
+    p.background_fill_alpha = 0
+    p.border_fill_alpha = 0
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+    # output to static HTML file in the templates folder
+    bok.output_file("templates/plot.html")
+    bok.save(p)
+    # Get html embeddable components
+    script, div = components(p)
+    return script, div

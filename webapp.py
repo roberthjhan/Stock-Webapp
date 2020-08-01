@@ -8,15 +8,11 @@ https://bytenbit.com/embed-latest-tweet-website-automatically/
 To do:
 - make requirements.txt
 - use candles to show increases or decreases in plot
-- plot is not fitting in axis and label cutoff
-- implement a flash warning when an invalid ticker is used or token runs out of api calls
-- lookup again nonfunctional
-- custom validators?
 """
 
 from flask import Flask, render_template, url_for, request, flash, redirect
 from form import StockForm
-from chart import get_stock, chart_it
+from chart import get_stock, chart_it, test_chart
 
 app = Flask(__name__)
 
@@ -45,21 +41,30 @@ def stonks():
         return redirect(url_for("lookup", ticker = ticker))
     else:
         # Custom validator?
-        #flash(f"ticker not found!", "error")
+        #flash(f"Invalid!", "error")
         return render_template("stonk.html", title = "Stonk lookup", form = form)
 
 @app.route("/lookup/<ticker>/", methods = ["GET", "POST"])
 def lookup(ticker):
     ''' Lookup page has a interactive Bokeh plot for the specified stock information'''
-    flash(f"Found {ticker}!", "success")
+
     data = get_stock(ticker, "/ytd") #buttons for ytd, 1yr, etc...
+    # If no stock data received, return to /stonks and flash an error
+    if "Error" in data:
+        flash(f"{data}", "error")
+        return redirect(url_for("stonks"))
+    else:
+        flash(f"Found {ticker}!", "success")
+    # Generate plot elements
     script, plot_div = chart_it(data)
     plot = (script, plot_div)
+
     # May need new form for this
     form = StockForm()
-    if request.method == "POST":
-        ticker = form.ticker.data
-        return redirect(url_for("lookup", ticker = ticker))
+    # if form.validate_on_submit():
+    #     ticker = form.ticker.data
+    #     return redirect(url_for("lookup", ticker = ticker))
+
     return render_template("lookup.html", title = ticker.upper(), form = form, plot = plot)
 
 # run from script in debug mode

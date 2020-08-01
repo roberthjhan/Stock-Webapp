@@ -7,13 +7,6 @@
             {{ part | safe }}
         {% endfor %}
     </div>
-    <div class = "form-group">
-        <label> Ticker: </label>
-        {{ form.ticker(class = "form-control", placeholder = "AAPL") }}
-    </div>
-    <div class = "form-group">
-        {{ form.submit(class = "btn btn-outline-info") }}
-    </div>
     <a href = "/stonks">Search again</a>
 </body>
 {% endblock content %}
