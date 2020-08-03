@@ -23,7 +23,6 @@ ERRORS = {"400": "Invalid ticker.",
 
 def get_stock(ticker = "aapl", range = ""):
     '''
-    Incomplete: Process errors
     Take a ticker and range and make an API call to the IEX cloud
     Return a stock information in json format or an error
     '''
@@ -33,7 +32,6 @@ def get_stock(ticker = "aapl", range = ""):
     ticker = ticker.lower()
     api_url = "https://cloud-sse.iexapis.com/stable/stock/" + ticker + \
                    "/chart" + range + "?token=" + token
-    # print(api_url)
     try:
         # Try to return a json formatted response
         return(requests.get(api_url).json())
@@ -66,10 +64,9 @@ def chart_it(data):
                                         close = close,
                                         open = open,
                                         volume = volume))
-    # create a new plot with a title and axis labels
+    # Create a new plot with a title and axis labels
     p = bok.figure(x_axis_type = 'datetime')
     p.yaxis[0].formatter = NumeralTickFormatter(format="$0.00")
-
     # Add a line
     p.line(x = "dates", y = "avg_prices", line_width = 3, source = source)
     # Fill under line

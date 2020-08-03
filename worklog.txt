@@ -22,3 +22,8 @@ July 2020
 - Working version of the web app is built. Room for improvement is discussed in webapp.py.
 - Was working on a fix for the axes not being shown in the bokeh plot when I ran out of API calls. 
 - Fixed axes, implemented flash messages for API errors.
+
+Aug 2020
+- Finally got around to setting up Github in PyCharm.
+- Updated preview.
+- Trying to use heroku to deploy a live version of the webapp on github. Having some difficulty with gunicorn.

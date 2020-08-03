@@ -6,7 +6,6 @@ http://embed.redditjs.com/
 https://bytenbit.com/embed-latest-tweet-website-automatically/
 
 To do:
-- make requirements.txt
 - use candles to show increases or decreases in plot
 """
 
@@ -15,7 +14,6 @@ from form import StockForm
 from chart import get_stock, chart_it, test_chart
 
 app = Flask(__name__)
-
 app.config["SECRET_KEY"] = "super secret"
 
 @app.route("/")
@@ -47,7 +45,6 @@ def stonks():
 @app.route("/lookup/<ticker>/", methods = ["GET", "POST"])
 def lookup(ticker):
     ''' Lookup page has a interactive Bokeh plot for the specified stock information'''
-
     data = get_stock(ticker, "/ytd") #buttons for ytd, 1yr, etc...
     # If no stock data received, return to /stonks and flash an error
     if "Error" in data:
@@ -58,13 +55,8 @@ def lookup(ticker):
     # Generate plot elements
     script, plot_div = chart_it(data)
     plot = (script, plot_div)
-
     # May need new form for this
     form = StockForm()
-    # if form.validate_on_submit():
-    #     ticker = form.ticker.data
-    #     return redirect(url_for("lookup", ticker = ticker))
-
     return render_template("lookup.html", title = ticker.upper(), form = form, plot = plot)
 
 # run from script in debug mode
