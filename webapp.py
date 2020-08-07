@@ -8,7 +8,7 @@ https://bytenbit.com/embed-latest-tweet-website-automatically/
 To do:
 - use candles to show increases or decreases in plot
 """
-
+import os
 from flask import Flask, render_template, url_for, request, flash, redirect
 from form import StockForm
 from chart import get_stock, chart_it, test_chart

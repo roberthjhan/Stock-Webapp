@@ -21,22 +21,25 @@ ERRORS = {"400": "Invalid ticker.",
           "451": "Enterprise permission required.",
           "500": "IEX Cloud system error."}
 
+
+
 def get_stock(ticker = "aapl", range = ""):
     '''
     Take a ticker and range and make an API call to the IEX cloud
     Return a stock information in json format or an error
     '''
-    f = open("token.txt", "r")
+    f = open("s_token.txt", "r")
     token = f.read()
-
     ticker = ticker.lower()
-    api_url = "https://cloud-sse.iexapis.com/stable/stock/" + ticker + \
-                   "/chart" + range + "?token=" + token
+    # api_url = "https://cloud-sse.iexapis.com/stable/stock/" + ticker + \
+    #                "/chart" + range + "?token=" + token
+    api_url = "https://sandbox.iexapis.com/stable/stock/" + ticker + \
+              "/chart" + range + "?token=" + token
     try:
         # Try to return a json formatted response
         return(requests.get(api_url).json())
     except:
-        # An error occured take error code and generate an error response
+        # An error occurred take error code and generate an error response
         response = [n for n in str(requests.get(api_url)) if n.isdigit()]
         return report_error("".join(response))
 
@@ -204,3 +207,9 @@ def test_chart():
     # Get html embeddable components
     script, div = components(p)
     return script, div
+
+
+
+def test():
+    stock = get_stock("aapl", "/ytd")
+    print(stock)
