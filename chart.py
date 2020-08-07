@@ -102,6 +102,66 @@ def chart_it(data):
     script, div = components(p)
     return script, div
 
+def market_sum():
+    '''
+    Take historical performance information in json from major indexes (Dow Jones Industrial, SP500
+    NASDAQ and creates a plot'''
+    dji = {}
+    nasdaq = {}
+    sp500 = {}
+
+    # Collect data
+    dates = np.array([day["date"] for day in data])
+    dates = pd.to_datetime((dates), format = "%Y/%m/%d")
+    prices = np.array(([day["low"] for day in data], [day["high"] for day in data]))
+    avg_prices = np.average(prices, axis = 0)
+    close = np.array([day["close"] for day in data])
+    open = np.array([day["open"] for day in data])
+    volume = np.array([day["volume"] for day in data])
+    # Create a source cannot pass literals and expect hovertool to work as intended
+    source = ColumnDataSource(data = dict(dates = dates,
+                                        avg_prices = avg_prices,
+                                        close = close,
+                                        open = open,
+                                        volume = volume))
+    # Create a new plot with a title and axis labels
+    p = bok.figure(x_axis_type = 'datetime')
+    p.yaxis[0].formatter = NumeralTickFormatter(format="$0.00")
+    # Add a line
+    p.line(x = "dates", y = "avg_prices", line_width = 3, source = source)
+    # Fill under line
+    band = Band(base = 'dates',
+                upper = 'avg_prices',
+                source = source,
+                level = 'underlay',
+                fill_alpha = 0.2,
+                fill_color = '#55FF88')
+    p.add_layout(band)
+    # Create hovertool showing date, avg_price, volume, open, and close
+    p.add_tools(HoverTool(
+        tooltips = [
+            ('Date',    '@dates{%F}'),
+            ('Price',   '$@avg_prices{0.2f}'),
+            ('Volume',  '@volume{0,0}'),
+            ('Open',    '$@open{0.2f}'),
+            ('Close',   '$@close{0.2f}')],
+        formatters = {
+            "@dates": "datetime",
+            "price" : "printf",
+            "volume": "printf",
+            "open"  : "printf",
+            "close" : "printf"},
+        mode = "vline"))
+    # Aesthetic changes
+    p.toolbar.autohide = True
+    p.min_border_left = 50
+    p.min_border_bottom = 50
+    p.background_fill_alpha = 0
+    p.border_fill_alpha = 0
+    # Generate html embeddable components
+    script, div = components(p)
+    return script, div
+
 def test_chart():
     x = [1,2,3,4,5,6,7,8,9]
     y = [1,2,3,4,5,6,7,8,9]

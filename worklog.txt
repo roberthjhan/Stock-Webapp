@@ -37,3 +37,6 @@ Aug 2020
 - Trying to use heroku to deploy a live version of the webapp on github. Having some difficulty with gunicorn.
 - I think it would be cool to have a "favorite stocks" feature but implementing it will 100% use up my API
 calls way too fast which will be very not fun.
+- Found out I can use a sandbox token for API calls... Anyways I've decided to move wall streets bets content to
+its own page to ease up on the cringeyness and make the project more presentable. Currently working on displaying a
+market summary instead.

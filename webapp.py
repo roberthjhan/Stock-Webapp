@@ -58,6 +58,12 @@ def lookup(ticker):
     # May need new form for this
     form = StockForm()
     return render_template("lookup.html", title = ticker.upper(), form = form, plot = plot)
+@app.route("/wsb")
+def wsb():
+    "Hold wallstreetsbets content in one page for less cringe when people look at this"
+    # script, plot_div = market_sum()
+    # plot = (script, plot_div)
+    return render_template("wsb.html")
 
 # run from script in debug mode
 if __name__ == "__main__":
