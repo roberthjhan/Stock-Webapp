@@ -1,6 +1,7 @@
 '''
 File containing get data function and plotting function for
-visualizing stock data
+visualizing stock data. This file uses Bokeh to plot data
+parsed from the IEX Cloud API, a RESTful API.
 Author: Robert Han
 '''
 
@@ -20,8 +21,6 @@ ERRORS = {"400": "Invalid ticker.",
           "429": "Too many requests.",
           "451": "Enterprise permission required.",
           "500": "IEX Cloud system error."}
-
-
 
 def get_stock(ticker = "aapl", range = ""):
     '''
@@ -106,14 +105,24 @@ def chart_it(data):
     return script, div
 
 def market_sum():
-    '''
-    Take historical performance information in json from major indexes (Dow Jones Industrial, SP500
-    NASDAQ and creates a plot'''
-    dji = {}
-    nasdaq = {}
-    sp500 = {}
+    ''' IN PROGRESS
+    Take historical performance information in json from major indexes
+    (Dow Jones Industrial, S&P500, NASDAQ and creates a plot'''
+    summary = {"Dow Jones Industrial": "dji",
+               "NASDAQ": "ixic",
+               "SP500": "gspc"}
+    # Replace ticker with data from API
+    for key in summary.keys():
+        summary[key] = get_stock(summary[key])
+    return chart_multi(summary)
 
-    # Collect data
+def chart_multi(data):
+    '''
+    Keep it simple just plot average prices, not sure if hovertool will work
+    try later.
+    '''
+
+    # Collect data NEEDS CORRECTING
     dates = np.array([day["date"] for day in data])
     dates = pd.to_datetime((dates), format = "%Y/%m/%d")
     prices = np.array(([day["low"] for day in data], [day["high"] for day in data]))
@@ -127,6 +136,9 @@ def market_sum():
                                         close = close,
                                         open = open,
                                         volume = volume))
+
+    # See bokeh documentation for details on implementation
+
     # Create a new plot with a title and axis labels
     p = bok.figure(x_axis_type = 'datetime')
     p.yaxis[0].formatter = NumeralTickFormatter(format="$0.00")
@@ -162,8 +174,10 @@ def market_sum():
     p.background_fill_alpha = 0
     p.border_fill_alpha = 0
     # Generate html embeddable components
-    script, div = components(p)
-    return script, div
+    # script, div = components(p)
+    # return script, div
+    p.show()
+
 
 def test_chart():
     x = [1,2,3,4,5,6,7,8,9]
