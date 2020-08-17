@@ -109,61 +109,63 @@ def market_sum():
     '''
     Take historical performance information in json from major indexes (Dow Jones Industrial, SP500
     NASDAQ and creates a plot'''
-    dji = {}
-    nasdaq = {}
-    sp500 = {}
-
-    # Collect data
-    dates = np.array([day["date"] for day in data])
+    dji = get_stock(".dji", "/ytd")
+    nasdaq = get_stock(".ndaq", "/ytd")
+    sp500 = get_stock(".inx", "/ytd") #Not sure about these tickers check later before testing
+    print(dji)
+    # Collect dates
+    dates = np.array([day["date"] for day in dji])
     dates = pd.to_datetime((dates), format = "%Y/%m/%d")
-    prices = np.array(([day["low"] for day in data], [day["high"] for day in data]))
-    avg_prices = np.average(prices, axis = 0)
-    close = np.array([day["close"] for day in data])
-    open = np.array([day["open"] for day in data])
-    volume = np.array([day["volume"] for day in data])
+
+    # Filter data
+    # Only do prices for now not sure how hovertools will work with three lines
+    dji = np.array(([day["low"] for day in dji], [day["high"] for day in dji]))
+    nasdaq = np.array(([day["low"] for day in nasdaq], [day["high"] for day in nasdaq]))
+    sp500 = np.array(([day["low"] for day in sp500], [day["high"] for day in sp500]))
+    # Calculate average price for each day
+    dji_avg = np.average(dji, axis = 0)
+    nasdaq_avg = np.average(nasdaq, axis = 0)
+    sp500_avg = np.average(sp500, axis = 0)
+    # Add these back in later maybe(?)
+    # close = np.array([day["close"] for day in data])
+    # open = np.array([day["open"] for day in data])
+    # volume = np.array([day["volume"] for day in data])
+
     # Create a source cannot pass literals and expect hovertool to work as intended
     source = ColumnDataSource(data = dict(dates = dates,
-                                        avg_prices = avg_prices,
-                                        close = close,
-                                        open = open,
-                                        volume = volume))
+                                        dji = dji_avg,
+                                        nasdaq = nasdaq_avg,
+                                        sp500 = sp500_avg))
     # Create a new plot with a title and axis labels
     p = bok.figure(x_axis_type = 'datetime')
     p.yaxis[0].formatter = NumeralTickFormatter(format="$0.00")
-    # Add a line
-    p.line(x = "dates", y = "avg_prices", line_width = 3, source = source)
-    # Fill under line
-    band = Band(base = 'dates',
-                upper = 'avg_prices',
-                source = source,
-                level = 'underlay',
-                fill_alpha = 0.2,
-                fill_color = '#55FF88')
-    p.add_layout(band)
+    # Add lines
+
+    for name, data, color in zip(["Dow Jones Industrial", "NASDAQ", "S&P500"], [dji, nasdaq, sp500], ["purple", "orange", "blue"]):
+        p.line(x = "dates", y = data, line_width = 3, color = color, legend_label = name, source = source)
+
+
+    # p.line(x = "dates", y = "avg_prices", line_width = 3, source = source)
+    # # Fill under line
+    # band = Band(base = 'dates',
+    #             upper = 'avg_prices',
+    #             source = source,
+    #             level = 'underlay',
+    #             fill_alpha = 0.2,
+    #             fill_color = '#55FF88')
+    # p.add_layout(band)
+
     # Create hovertool showing date, avg_price, volume, open, and close
-    p.add_tools(HoverTool(
-        tooltips = [
-            ('Date',    '@dates{%F}'),
-            ('Price',   '$@avg_prices{0.2f}'),
-            ('Volume',  '@volume{0,0}'),
-            ('Open',    '$@open{0.2f}'),
-            ('Close',   '$@close{0.2f}')],
-        formatters = {
-            "@dates": "datetime",
-            "price" : "printf",
-            "volume": "printf",
-            "open"  : "printf",
-            "close" : "printf"},
-        mode = "vline"))
-    # Aesthetic changes
+
     p.toolbar.autohide = True
     p.min_border_left = 50
     p.min_border_bottom = 50
     p.background_fill_alpha = 0
     p.border_fill_alpha = 0
+    p.show()
     # Generate html embeddable components
-    script, div = components(p)
-    return script, div
+    # script, div = components(p)
+    # return script, div
 
 def test_chart():
     x = [1,2,3,4,5,6,7,8,9]
@@ -211,5 +213,4 @@ def test_chart():
 
 
 def test():
-    stock = get_stock("aapl", "/ytd")
-    print(stock)
+    market_sum()

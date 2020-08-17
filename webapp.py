@@ -58,6 +58,7 @@ def lookup(ticker):
     # May need new form for this
     form = StockForm()
     return render_template("lookup.html", title = ticker.upper(), form = form, plot = plot)
+
 @app.route("/wsb")
 def wsb():
     "Hold wallstreetsbets content in one page for less cringe when people look at this"
