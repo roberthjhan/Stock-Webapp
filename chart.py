@@ -1,6 +1,7 @@
 '''
 File containing get data function and plotting function for
-visualizing stock data
+visualizing stock data. This file uses Bokeh to plot data
+parsed from the IEX Cloud API, a RESTful API.
 Author: Robert Han
 '''
 
@@ -20,8 +21,6 @@ ERRORS = {"400": "Invalid ticker.",
           "429": "Too many requests.",
           "451": "Enterprise permission required.",
           "500": "IEX Cloud system error."}
-
-
 
 def get_stock(ticker = "aapl", range = ""):
     '''
@@ -118,7 +117,6 @@ def market_sum():
     dates = pd.to_datetime((dates), format = "%Y/%m/%d")
 
     # Filter data
-    # Only do prices for now not sure how hovertools will work with three lines
     dji = np.array(([day["low"] for day in dji], [day["high"] for day in dji]))
     nasdaq = np.array(([day["low"] for day in nasdaq], [day["high"] for day in nasdaq]))
     sp500 = np.array(([day["low"] for day in sp500], [day["high"] for day in sp500]))
@@ -126,12 +124,8 @@ def market_sum():
     dji_avg = np.average(dji, axis = 0)
     nasdaq_avg = np.average(nasdaq, axis = 0)
     sp500_avg = np.average(sp500, axis = 0)
-    # Add these back in later maybe(?)
-    # close = np.array([day["close"] for day in data])
-    # open = np.array([day["open"] for day in data])
-    # volume = np.array([day["volume"] for day in data])
 
-    # Create a source cannot pass literals and expect hovertool to work as intended
+    # Create a source, cannot pass literals and expect hovertool to work as intended
     source = ColumnDataSource(data = dict(dates = dates,
                                         dji = dji_avg,
                                         nasdaq = nasdaq_avg,
@@ -140,22 +134,8 @@ def market_sum():
     p = bok.figure(x_axis_type = 'datetime')
     p.yaxis[0].formatter = NumeralTickFormatter(format="$0.00")
     # Add lines
-
     for name, data, color in zip(["Dow Jones Industrial", "NASDAQ", "S&P500"], [dji, nasdaq, sp500], ["purple", "orange", "blue"]):
         p.line(x = "dates", y = data, line_width = 3, color = color, legend_label = name, source = source)
-
-
-    # p.line(x = "dates", y = "avg_prices", line_width = 3, source = source)
-    # # Fill under line
-    # band = Band(base = 'dates',
-    #             upper = 'avg_prices',
-    #             source = source,
-    #             level = 'underlay',
-    #             fill_alpha = 0.2,
-    #             fill_color = '#55FF88')
-    # p.add_layout(band)
-
-    # Create hovertool showing date, avg_price, volume, open, and close
 
     p.toolbar.autohide = True
     p.min_border_left = 50
