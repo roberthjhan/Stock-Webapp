@@ -7,8 +7,8 @@ https://bytenbit.com/embed-latest-tweet-website-automatically/
 
 To do:
 - use candles to show increases or decreases in plot
+- When running make sure working directory correct
 """
-import os
 from flask import Flask, render_template, url_for, request, flash, redirect
 from form import StockForm
 from chart import get_stock, chart_it, test_chart
@@ -19,13 +19,13 @@ app.config["SECRET_KEY"] = "super secret"
 @app.route("/")
 @app.route("/home")
 def home():
-    ''' Home page'''
+    ''' Home page market summary going here'''
     return render_template("home.html")
 
 @app.route("/about")
 def about():
     ''' About page'''
-    return render_template("about.html", title = "About") #pass in a title
+    return render_template("about.html", title = "About")
 
 @app.route("/stonks",  methods = ["GET", "POST"])
 def stonks():
@@ -62,8 +62,6 @@ def lookup(ticker):
 @app.route("/wsb")
 def wsb():
     "Hold wallstreetsbets content in one page for less cringe when people look at this"
-    # script, plot_div = market_sum()
-    # plot = (script, plot_div)
     return render_template("wsb.html")
 
 # run from script in debug mode
