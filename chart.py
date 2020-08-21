@@ -30,13 +30,9 @@ def get_stock(ticker = "aapl", range = ""):
     f = open("s_token.txt", "r")
     token = f.read()
     ticker = ticker.lower()
-    # api_url = "https://cloud-sse.iexapis.com/stable/stock/" + ticker + \
-    #                "/chart" + range + "?token=" + token
-    api_url = "https://sandbox.iexapis.com/stable/stock/" + ticker + \
-              "/chart" + range + "?token=" + token
     try:
         # Try to return a json formatted response
-        return(requests.get(api_url).json())
+        return requests.get(f"https://sandbox.iexapis.com/stable/stock/{ticker}/chart/{range}?token={token}").json()
     except:
         # An error occurred take error code and generate an error response
         response = [n for n in str(requests.get(api_url)) if n.isdigit()]
@@ -106,16 +102,16 @@ def chart_it(data):
 
 def market_sum():
     '''
-    Take historical performance information in json from major indexes (Dow Jones Industrial, SP500
-    NASDAQ and creates a plot'''
-    dji = get_stock(".dji", "/ytd")
-    nasdaq = get_stock(".ndaq", "/ytd")
-    sp500 = get_stock(".inx", "/ytd") #Not sure about these tickers check later before testing
-    print(dji)
+    Take historical performance information in json from ETFs matching
+    major indexes (DIA, SPY, QQQ and creates a plot
+
+    Needs cleaning up'''
+    dji = get_stock("dia", "ytd")
+    nasdaq = get_stock("qqq", "ytd")
+    sp500 = get_stock("spy", "ytd")
     # Collect dates
     dates = np.array([day["date"] for day in dji])
     dates = pd.to_datetime((dates), format = "%Y/%m/%d")
-
     # Filter data
     dji = np.array(([day["low"] for day in dji], [day["high"] for day in dji]))
     nasdaq = np.array(([day["low"] for day in nasdaq], [day["high"] for day in nasdaq]))
@@ -124,28 +120,53 @@ def market_sum():
     dji_avg = np.average(dji, axis = 0)
     nasdaq_avg = np.average(nasdaq, axis = 0)
     sp500_avg = np.average(sp500, axis = 0)
-
-    # Create a source, cannot pass literals and expect hovertool to work as intended
-    source = ColumnDataSource(data = dict(dates = dates,
-                                        dji = dji_avg,
-                                        nasdaq = nasdaq_avg,
-                                        sp500 = sp500_avg))
-    # Create a new plot with a title and axis labels
-    p = bok.figure(x_axis_type = 'datetime')
+    # Create plot
+    p = bok.figure(plot_width = 800, plot_height = 500, x_axis_type = 'datetime')
     p.yaxis[0].formatter = NumeralTickFormatter(format="$0.00")
-    # Add lines
-    for name, data, color in zip(["Dow Jones Industrial", "NASDAQ", "S&P500"], [dji, nasdaq, sp500], ["purple", "orange", "blue"]):
-        p.line(x = "dates", y = data, line_width = 3, color = color, legend_label = name, source = source)
-
+    # Add lines --May revise later to reduce repetitive code--
+    source = ColumnDataSource(data=dict(dates=dates,
+                                        dia=dji_avg,
+                                        spy=sp500_avg,
+                                        qqq=nasdaq_avg))
+    dia_line = p.line('dates', 'dia', line_width = 3, color = "purple", source = source)
+    p.add_tools(HoverTool(
+        renderers=[dia_line],
+        tooltips=[
+            ('Date', '@dates{%F}'),
+            ('Price', '$@{dia}{0.2f}')],
+        formatters={
+            "@dates": "datetime",
+            "price": "printf"},
+        mode="mouse"))
+    spy_line = p.line('dates', 'spy', line_width=3, color="orange", source = source)
+    p.add_tools(HoverTool(
+        renderers=[spy_line],
+        tooltips=[
+            ('Date', '@dates{%F}'),
+            ('Price', '$@{spy}{0.2f}')],
+        formatters={
+            "@dates": "datetime",
+            "price": "printf"},
+        mode="mouse"))
+    qqq_line = p.line('dates', 'qqq', line_width=3, color="blue", source=source)
+    p.add_tools(HoverTool(
+        renderers=[qqq_line],
+        tooltips=[
+            ('Date', '@dates{%F}'),
+            ('Price', '$@{qqq}{0.2f}')],
+        formatters={
+            "@dates": "datetime",
+            "price": "printf"},
+        mode="mouse"))
+    # Aesthetic changes
     p.toolbar.autohide = True
     p.min_border_left = 50
     p.min_border_bottom = 50
     p.background_fill_alpha = 0
     p.border_fill_alpha = 0
-    p.show()
     # Generate html embeddable components
-    # script, div = components(p)
-    # return script, div
+    script, div = components(p)
+    return script, div
 
 def test_chart():
     x = [1,2,3,4,5,6,7,8,9]
@@ -175,7 +196,7 @@ def test_chart():
             "x": "printf",
             "y": "printf",
         },
-        mode="vline"))
+        mode="mouse"))
 
     p.toolbar.autohide = True
     p.min_border_left = 50
@@ -189,8 +210,3 @@ def test_chart():
     # Get html embeddable components
     script, div = components(p)
     return script, div
-
-
-
-def test():
-    market_sum()

@@ -3,7 +3,7 @@ Status: In Progress Working
 Owner: Robert Han
 
 
-May 2020
+May 2020 ish
 - Concept for project: Stock visualization application. Should be able to show essential features of a trading
 tool such as historical prices, highs/lows, volume, etc.
 - Searched for API's or libraries to pull stock information from.
@@ -40,3 +40,10 @@ calls way too fast which will be very not fun.
 - Found out I can use a sandbox token for API calls... Anyways I've decided to move wall streets bets content to
 its own page to ease up on the cringeyness and make the project more presentable. Currently working on displaying a
 market summary instead.
+- Wanted to put together an index chart; unfortunately IEX does not provide that information. An alternative is to use
+ETF's which match those indexes such as "SPY" for the "SP500" which is what I'll probably run with.
+- Putting together a modified version of this project for my mom. It will read in trading information from an excel sheet
+she has and map the orders to a ytd chart. Im reusing the bulk of the chart function so for now it may hang out in this
+repo for now.
+- Added ETF graph, code needs some cleaning up but the final result is where I want it for now. Will start working on
+the Heroku deployment now.

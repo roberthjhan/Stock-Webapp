@@ -11,7 +11,7 @@ To do:
 """
 from flask import Flask, render_template, url_for, request, flash, redirect
 from form import StockForm
-from chart import get_stock, chart_it, test_chart
+from chart import get_stock, chart_it, market_sum
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "super secret"
@@ -20,7 +20,10 @@ app.config["SECRET_KEY"] = "super secret"
 @app.route("/home")
 def home():
     ''' Home page market summary going here'''
-    return render_template("home.html")
+    # Generate plot elements
+    script, plot_div = market_sum()
+    plot = (script, plot_div)
+    return render_template("home.html", plot = plot)
 
 @app.route("/about")
 def about():
@@ -45,7 +48,7 @@ def stonks():
 @app.route("/lookup/<ticker>/", methods = ["GET", "POST"])
 def lookup(ticker):
     ''' Lookup page has a interactive Bokeh plot for the specified stock information'''
-    data = get_stock(ticker, "/ytd") #buttons for ytd, 1yr, etc...
+    data = get_stock(ticker, "ytd") #buttons for ytd, 1yr, etc...
     # If no stock data received, return to /stonks and flash an error
     if "Error" in data:
         flash(f"{data}", "error")

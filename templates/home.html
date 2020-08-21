@@ -1,5 +1,10 @@
 {% extends "layout.html" %} <!-- inherit from layout.html -->
 {% block content %}
-<h1> Something is coming here </h1>
+<h1> WIP </h1>
+    <div class = "stock-plot">
+        {% for part in plot %}
+            {{ part | safe }}
+        {% endfor %}
+    </div>
 
 {% endblock content %}}
