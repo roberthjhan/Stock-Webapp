@@ -80,7 +80,7 @@ def chart_it(data):
                 source=source,
                 level='underlay',
                 fill_alpha=0.5,
-                fill_color='#fc9d03')#55FF88
+                fill_color='#fc9d03')
     p.add_layout(band)
     # Create hovertool showing date, avg_price, volume, open, and close
     p.add_tools(HoverTool(
